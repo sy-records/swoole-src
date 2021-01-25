@@ -8,6 +8,9 @@ if [ ! -f "/.dockerenv" ]; then
 fi
 
 env
+type apk
+type apt
+type apt-get
 
 #-----------compile------------
 #-------print error only-------
