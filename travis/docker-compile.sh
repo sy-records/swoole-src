@@ -9,8 +9,13 @@ fi
 
 #-----------compile------------
 #-------print error only-------
-apk update -y
-apk install -y libcurl4-openssl-dev
+if nonce=$(type apt-get 2>&1) ;then
+  apt-get update -y
+  apt-get install -y libcurl4-openssl-dev
+else
+  apk update
+  apk add libcurl4-openssl-dev
+fi
 cd "${__DIR__}" && cd ../ && \
 ./clear.sh > /dev/null && \
 phpize --clean > /dev/null && \
