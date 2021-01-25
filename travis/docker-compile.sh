@@ -14,7 +14,7 @@ if nonce=$(type apt-get 2>&1) ;then
   apt-get install -y libcurl4-openssl-dev
 else
   apk update
-  apk add --no-cache libressl-dev
+  apk add --no-cache curl-dev
 fi
 cd "${__DIR__}" && cd ../ && \
 ./clear.sh > /dev/null && \
