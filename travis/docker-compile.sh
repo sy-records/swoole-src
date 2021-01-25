@@ -7,15 +7,10 @@ if [ ! -f "/.dockerenv" ]; then
     exit
 fi
 
-env
-type apk
-type apt
-type apt-get
-
 #-----------compile------------
 #-------print error only-------
-apt-get update -y
-apt-get install -y libcurl4-openssl-dev
+apk update -y
+apk install -y libcurl4-openssl-dev
 cd "${__DIR__}" && cd ../ && \
 ./clear.sh > /dev/null && \
 phpize --clean > /dev/null && \
