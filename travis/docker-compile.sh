@@ -7,6 +7,8 @@ if [ ! -f "/.dockerenv" ]; then
     exit
 fi
 
+env
+
 #-----------compile------------
 #-------print error only-------
 apt-get update -y
