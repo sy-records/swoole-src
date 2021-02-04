@@ -203,6 +203,7 @@ static PHP_METHOD(swoole_http_request, parse);
 static PHP_METHOD(swoole_http_request, isCompleted);
 static PHP_METHOD(swoole_http_request, getMethod);
 static PHP_METHOD(swoole_http_request, getPath);
+static PHP_METHOD(swoole_http_request, getQuery);
 static PHP_METHOD(swoole_http_request, rawContent);
 static PHP_METHOD(swoole_http_request, __destruct);
 SW_EXTERN_C_END
@@ -229,6 +230,7 @@ const zend_function_entry swoole_http_request_methods[] =
     PHP_ME(swoole_http_request, isCompleted, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_http_request, getMethod, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_http_request, getPath, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http_request, getQuery, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_http_request, __destruct, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
@@ -1011,6 +1013,20 @@ static PHP_METHOD(swoole_http_request, getPath) {
 
     if (ctx->request.path) {
         RETURN_STRINGL(ctx->request.path, ctx->request.path_len);
+    }
+
+    RETURN_EMPTY_STRING();
+}
+
+static PHP_METHOD(swoole_http_request, getQuery) {
+    http_context *ctx = php_swoole_http_request_get_and_check_context(ZEND_THIS);
+    if (UNEXPECTED(!ctx)) {
+        RETURN_FALSE;
+    }
+
+    zval *zquery_string = zend_hash_str_find(Z_ARR_P(ctx->request.zserver), ZEND_STRL("query_string"));
+    if (zquery_string) {
+        RETURN_STRINGL(Z_STRVAL_P(zquery_string), Z_STRLEN_P(zquery_string));
     }
 
     RETURN_EMPTY_STRING();
