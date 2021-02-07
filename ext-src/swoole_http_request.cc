@@ -56,6 +56,7 @@ using swoole::Server;
 using swoole::Connection;
 using swoole::ListenPort;
 using swoole::microtime;
+using swoole::network::Address;
 
 static int http_request_on_path(swoole_http_parser *parser, const char *at, size_t length);
 static int http_request_on_query_string(swoole_http_parser *parser, const char *at, size_t length);
@@ -1019,15 +1020,19 @@ static PHP_METHOD(swoole_http_request, getScheme) {
 
 }
 
-
 static PHP_METHOD(swoole_http_request, getHost) {
     http_context *ctx = php_swoole_http_request_get_and_check_context(ZEND_THIS);
     if (UNEXPECTED(!ctx)) {
         RETURN_FALSE;
     }
 
-}
+    zval *zremote_addr = zend_hash_str_find(Z_ARR_P(ctx->request.zserver), ZEND_STRL("remote_addr"));
+    if (zremote_addr) {
+        RETURN_STRINGL(Z_STRVAL_P(zremote_addr), Z_STRLEN_P(zremote_addr));
+    }
 
+    RETURN_EMPTY_STRING();
+}
 
 static PHP_METHOD(swoole_http_request, getPort) {
     http_context *ctx = php_swoole_http_request_get_and_check_context(ZEND_THIS);
@@ -1035,6 +1040,12 @@ static PHP_METHOD(swoole_http_request, getPort) {
         RETURN_FALSE;
     }
 
+    zval *zserver_port = zend_hash_str_find(Z_ARR_P(ctx->request.zserver), ZEND_STRL("server_port"));
+    if (zserver_port) {
+        RETURN_LONG(Z_LVAL_P(zserver_port));
+    }
+
+    RETURN_NULL();
 }
 
 static PHP_METHOD(swoole_http_request, getPath) {
