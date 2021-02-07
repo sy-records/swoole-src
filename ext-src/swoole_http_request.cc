@@ -202,6 +202,9 @@ static PHP_METHOD(swoole_http_request, create);
 static PHP_METHOD(swoole_http_request, parse);
 static PHP_METHOD(swoole_http_request, isCompleted);
 static PHP_METHOD(swoole_http_request, getMethod);
+static PHP_METHOD(swoole_http_request, getScheme);
+static PHP_METHOD(swoole_http_request, getHost);
+static PHP_METHOD(swoole_http_request, getPort);
 static PHP_METHOD(swoole_http_request, getPath);
 static PHP_METHOD(swoole_http_request, getQuery);
 static PHP_METHOD(swoole_http_request, rawContent);
@@ -229,6 +232,9 @@ const zend_function_entry swoole_http_request_methods[] =
     PHP_ME(swoole_http_request, parse, arginfo_swoole_http_parse, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_http_request, isCompleted, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_http_request, getMethod, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http_request, getScheme, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http_request, getHost, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http_request, getPort, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_http_request, getPath, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_http_request, getQuery, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_http_request, __destruct, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
@@ -1003,6 +1009,32 @@ static PHP_METHOD(swoole_http_request, getMethod) {
     }
     const char *method = http_get_method_name((ctx->parser).method);
     RETURN_STRING(method);
+}
+
+static PHP_METHOD(swoole_http_request, getScheme) {
+    http_context *ctx = php_swoole_http_request_get_and_check_context(ZEND_THIS);
+    if (UNEXPECTED(!ctx)) {
+        RETURN_FALSE;
+    }
+
+}
+
+
+static PHP_METHOD(swoole_http_request, getHost) {
+    http_context *ctx = php_swoole_http_request_get_and_check_context(ZEND_THIS);
+    if (UNEXPECTED(!ctx)) {
+        RETURN_FALSE;
+    }
+
+}
+
+
+static PHP_METHOD(swoole_http_request, getPort) {
+    http_context *ctx = php_swoole_http_request_get_and_check_context(ZEND_THIS);
+    if (UNEXPECTED(!ctx)) {
+        RETURN_FALSE;
+    }
+
 }
 
 static PHP_METHOD(swoole_http_request, getPath) {
