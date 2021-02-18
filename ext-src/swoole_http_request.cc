@@ -56,7 +56,6 @@ using swoole::Server;
 using swoole::Connection;
 using swoole::ListenPort;
 using swoole::microtime;
-using swoole::network::Address;
 
 static int http_request_on_path(swoole_http_parser *parser, const char *at, size_t length);
 static int http_request_on_query_string(swoole_http_parser *parser, const char *at, size_t length);
