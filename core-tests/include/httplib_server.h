@@ -936,7 +936,7 @@ inline bool Server::process_request(Stream &strm,
         }
     }
 
-    // Rounting
+    // Routing
     if (routing(req, res, strm)) {
         if (res.status == -1) {
             res.status = req.ranges.empty() ? 200 : 206;
