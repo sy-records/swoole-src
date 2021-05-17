@@ -3,7 +3,7 @@ name: cygwin
 on:
   push:
     tags:
-      - 'v*'
+      - 'v4.6.*'
 
 env:
   VERSION: ${{ github.ref }}
@@ -18,24 +18,20 @@ jobs:
           platform: x64
           packages: cmake php php-devel gcc-g++ openssl libssl-devel libcurl-devel libpcre2-devel wget tar php-curl php-json php-sockets php-mysqli php-bcmath php-bz2 php-calendar php-ctype php-phar php-posix php-pspell php-exif php-recode php-fileinfo php-simplexml php-gd php-soap php-gettext php-sockets php-gmp php-gv php-iconv php-intl php-json php-tokenizer php-mbstring php-ming php-xmlreader php-xmlwriter php-opcache php-xsl php-zip php-pdo_mysql php-zlib php-redis
 
-      - name: Build Swoole
+      - name: Get Swoole Info
+        id: swoole_info
         run: |
-          SW_VERSION="${VERSION}".Split("/")[-1]
+          wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe -O jq.exe
+          wget https://api.github.com/repos/swoole/swoole-src/releases/latest -O latest
+          $Env:version=.\jq.exe '.tag_name' -r .\latest
+          $Env:body=.\jq.exe '.body' -r .\latest
+
+      - name: Build Swoole
+        env:
+          SW_VERSION: ${{ steps.swoole_info.env.version }}
+        run: |
           wget https://github.com/swoole/swoole-src/archive/${SW_VERSION}.tar.gz -O swoole.tar.gz
-          mkdir -p swoole
-          tar -xf swoole.tar.gz -C swoole --strip-components=1
-          rm swoole.tar.gz
-          cd swoole
-          /bin/phpize
-          ./configure --enable-openssl --with-openssl_dir=/usr --enable-http2 --enable-mysqlnd
-          make -j6
-          cp modules/swoole.dll /usr/lib/php/20180731
-          echo 'extension=swoole.dll' > /etc/php.d/swoole.ini
-          php -v
-          php -m
-          php --ri swoole
-          php --ini
-          cd ..
+
         shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
 
       - name: Configure Private Key
@@ -49,7 +45,6 @@ jobs:
 
       - name: Run build
         run: |
-          VERSION="${VERSION}".Split("/")[-1]
           C:\tools\php\php.exe -v
           C:\tools\php\php.exe -m
           git clone git@github.com:swoole/cygwin.git
@@ -64,6 +59,7 @@ jobs:
         with:
           tag_name: ${{ env.VERSION }}
           release_name: ${{ env.VERSION }}
+          body: ${{ env.BODY }}
           draft: false
           prerelease: false
 
