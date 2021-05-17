@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 env:
-  VERSION: ${{ github.ref }}
+  VERSION: "${{ github.ref }}".Split("/")[-1]
 
 jobs:
   build:
@@ -37,12 +37,22 @@ jobs:
           cd ..
         shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
 
+      - name: Configure Private Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.CYGWIN_DEPLOY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
       - name: Run build
         run: |
-          git clone https://github.com/swoole/cygwin.git
           C:\tools\php\php.exe -v
           C:\tools\php\php.exe -m
-          C:\tools\php\php.exe ${{github.workspace}}\cygwin\build.php
+          git clone git@github.com:swoole/cygwin.git
+          cd cygwin
+          C:\tools\php\php.exe ${{github.workspace}}\build.php
 
       - name: Create Release
         id: create_release
@@ -62,6 +72,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./cygwin/swoole-${{ env.VERSION }}.zip
+          asset_path: .\cygwin\swoole-${{ env.VERSION }}.zip
           asset_name: swoole-${{ env.VERSION }}.zip
           asset_content_type: application/zip
