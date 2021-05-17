@@ -11,24 +11,29 @@ env:
 jobs:
   build:
     runs-on: windows-latest
+    outputs:
+      version: ${{ steps.swoole_info.outputs.version }}
+      body: ${{ steps.swoole_info.outputs.body }}
     steps:
       - name: Set up Cygwin
         uses: egor-tensin/setup-cygwin@v3
         with:
           platform: x64
-          packages: cmake php php-devel gcc-g++ openssl libssl-devel libcurl-devel libpcre2-devel wget tar php-curl php-json php-sockets php-mysqli php-bcmath php-bz2 php-calendar php-ctype php-phar php-posix php-pspell php-exif php-recode php-fileinfo php-simplexml php-gd php-soap php-gettext php-sockets php-gmp php-gv php-iconv php-intl php-json php-tokenizer php-mbstring php-ming php-xmlreader php-xmlwriter php-opcache php-xsl php-zip php-pdo_mysql php-zlib php-redis
+          packages: cmake php php-devel gcc-g++ openssl libssl-devel libcurl-devel libpcre2-devel wget tar php-curl php-json
 
       - name: Get Swoole Info
         id: swoole_info
         run: |
           wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe -O jq.exe
           wget https://api.github.com/repos/swoole/swoole-src/releases/latest -O latest
-          $Env:version=.\jq.exe '.tag_name' -r .\latest
-          $Env:body=.\jq.exe '.body' -r .\latest
+          .\jq.exe '.tag_name' -r .\latest
+          .\jq.exe '.body' -r .\latest
+          echo "::set-output name=version::`\jq.exe '.tag_name' -r .\latest`"
+          echo "::set-output name=body::`.\jq.exe '.body' -r .\latest`"
 
       - name: Build Swoole
         env:
-          SW_VERSION: ${{ steps.swoole_info.env.version }}
+          SW_VERSION: ${{ needs.swoole_info.outputs.version }}
         run: |
           wget https://github.com/swoole/swoole-src/archive/${SW_VERSION}.tar.gz -O swoole.tar.gz
 
@@ -44,6 +49,8 @@ jobs:
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
       - name: Run build
+        env:
+          VERSION: ${{ needs.swoole_info.outputs.version }}
         run: |
           C:\tools\php\php.exe -v
           C:\tools\php\php.exe -m
@@ -57,9 +64,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.VERSION }}
-          release_name: ${{ env.VERSION }}
-          body: ${{ env.BODY }}
+          tag_name:  ${{ needs.swoole_info.outputs.version }}
+          release_name:  ${{ needs.swoole_info.outputs.version }}
+          body:  ${{ needs.swoole_info.outputs.body }}
           draft: false
           prerelease: false
 
@@ -70,6 +77,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: .\cygwin\swoole-${{ env.VERSION }}.zip
-          asset_name: swoole-${{ env.VERSION }}.zip
+          asset_path: .\cygwin\swoole-${{ needs.swoole_info.outputs.version }}.zip
+          asset_name: swoole-${{ needs.swoole_info.outputs.version }}.zip
           asset_content_type: application/zip
