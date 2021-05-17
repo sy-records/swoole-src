@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 env:
-  VERSION: "${{ github.ref }}".Split("/")[-1]
+  VERSION: ${{ github.ref }}
 
 jobs:
   build:
@@ -20,7 +20,8 @@ jobs:
 
       - name: Build Swoole
         run: |
-          wget https://github.com/swoole/swoole-src/archive/${VERSION}.tar.gz -O swoole.tar.gz
+          SW_VERSION="${VERSION}".Split("/")[-1]
+          wget https://github.com/swoole/swoole-src/archive/${SW_VERSION}.tar.gz -O swoole.tar.gz
           mkdir -p swoole
           tar -xf swoole.tar.gz -C swoole --strip-components=1
           rm swoole.tar.gz
@@ -48,6 +49,7 @@ jobs:
 
       - name: Run build
         run: |
+          VERSION="${VERSION}".Split("/")[-1]
           C:\tools\php\php.exe -v
           C:\tools\php\php.exe -m
           git clone git@github.com:swoole/cygwin.git
