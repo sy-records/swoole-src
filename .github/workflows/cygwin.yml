@@ -3,7 +3,7 @@ name: cygwin
 on:
   push:
     tags:
-      - 'v4.6.*'
+      - 'v*'
 
 env:
   VERSION: ${{ github.ref }}
@@ -13,30 +13,39 @@ jobs:
     runs-on: windows-latest
     outputs:
       version: ${{ steps.swoole_info.outputs.version }}
-      body: ${{ steps.swoole_info.outputs.body }}
+      body: ${{ steps.swoole_info.outputs.upload_url }}
     steps:
       - name: Set up Cygwin
         uses: egor-tensin/setup-cygwin@v3
         with:
           platform: x64
-          packages: cmake php php-devel gcc-g++ openssl libssl-devel libcurl-devel libpcre2-devel wget tar php-curl php-json
+          packages: cmake php php-devel gcc-g++ openssl libssl-devel libcurl-devel libpcre2-devel wget tar php-curl php-json php-sockets php-mysqli php-bcmath php-bz2 php-calendar php-ctype php-phar php-posix php-pspell php-exif php-recode php-fileinfo php-simplexml php-gd php-soap php-gettext php-sockets php-gmp php-gv php-iconv php-intl php-json php-tokenizer php-mbstring php-ming php-xmlreader php-xmlwriter php-opcache php-xsl php-zip php-pdo_mysql php-zlib php-redis
 
       - name: Get Swoole Info
         id: swoole_info
         run: |
-          wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-win64.exe -O jq.exe
-          wget https://api.github.com/repos/swoole/swoole-src/releases/latest -O latest
-          .\jq.exe '.tag_name' -r .\latest
-          .\jq.exe '.body' -r .\latest
-          echo "::set-output name=version::`\jq.exe '.tag_name' -r .\latest`"
-          echo "::set-output name=body::`.\jq.exe '.body' -r .\latest`"
+          wget https://api.github.com/repos/sy-records/swoole-src/releases/latest -O latest
+          $g = cat .\version | ConvertFrom-Json
+          echo "::set-output name=version::$g.version"
+          echo "::set-output name=upload_url::$g.upload_url"
 
       - name: Build Swoole
-        env:
-          SW_VERSION: ${{ needs.swoole_info.outputs.version }}
         run: |
           wget https://github.com/swoole/swoole-src/archive/${SW_VERSION}.tar.gz -O swoole.tar.gz
-
+          mkdir -p swoole
+          tar -xf swoole.tar.gz -C swoole --strip-components=1
+          rm swoole.tar.gz
+          cd swoole
+          /bin/phpize
+          ./configure --enable-openssl --with-openssl_dir=/usr --enable-http2 --enable-mysqlnd
+          make -j6
+          cp modules/swoole.dll /usr/lib/php/20180731
+          echo 'extension=swoole.dll' > /etc/php.d/swoole.ini
+          php -v
+          php -m
+          php --ri swoole
+          php --ini
+          cd ..
         shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
 
       - name: Configure Private Key
@@ -45,7 +54,6 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
       - name: Run build
@@ -58,25 +66,13 @@ jobs:
           cd cygwin
           C:\tools\php\php.exe ${{github.workspace}}\build.php
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name:  ${{ needs.swoole_info.outputs.version }}
-          release_name:  ${{ needs.swoole_info.outputs.version }}
-          body:  ${{ needs.swoole_info.outputs.body }}
-          draft: false
-          prerelease: false
-
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: .\cygwin\swoole-${{ needs.swoole_info.outputs.version }}.zip
-          asset_name: swoole-${{ needs.swoole_info.outputs.version }}.zip
+          upload_url: ${{ steps.swoole_info.outputs.upload_url }}
+          asset_path: .\cygwin\swoole-${{ steps.swoole_info.outputs.version }}.zip
+          asset_name: swoole-${{ steps.swoole_info.outputs.version }}.zip
           asset_content_type: application/zip
