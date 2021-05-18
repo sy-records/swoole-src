@@ -2,8 +2,8 @@ name: cygwin
 
 on:
   push:
-    tags:
-      - 'v*'
+#    tags:
+#      - 'v*'
 
 env:
   VERSION: ${{ github.ref }}
@@ -25,7 +25,7 @@ jobs:
         id: swoole_info
         run: |
           wget https://api.github.com/repos/sy-records/swoole-src/releases/latest -O latest
-          $g = cat .\version | ConvertFrom-Json
+          $g = cat .\latest | ConvertFrom-Json
           echo "::set-output name=version::$g.version"
           echo "::set-output name=upload_url::$g.upload_url"
 
