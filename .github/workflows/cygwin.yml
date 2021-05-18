@@ -5,9 +5,6 @@ on:
 #    tags:
 #      - 'v*'
 
-env:
-  VERSION: ${{ github.ref }}
-
 jobs:
   build:
     runs-on: windows-latest
@@ -57,7 +54,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.CYGWIN_DEPLOY }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
       - name: Run build
