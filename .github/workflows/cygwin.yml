@@ -2,8 +2,8 @@ name: cygwin
 
 on:
   push:
-#    tags:
-#      - 'v*'
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -71,5 +71,5 @@ jobs:
         with:
           upload_url: ${{ steps.swoole_info.outputs.upload_url }}
           asset_path: .\swoole-cygwin\swoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
-          asset_name: swoole-${{ steps.swoole_info.outputs.version }}.zip
+          asset_name: swoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
           asset_content_type: application/zip
