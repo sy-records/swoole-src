@@ -19,8 +19,7 @@ jobs:
         uses: egor-tensin/setup-cygwin@v3
         with:
           platform: x64
-          packages: wget tar
-      #          packages: cmake php php-devel gcc-g++ openssl libssl-devel libcurl-devel libpcre2-devel wget tar php-curl php-json php-sockets php-mysqli php-bcmath php-bz2 php-calendar php-ctype php-phar php-posix php-pspell php-exif php-recode php-fileinfo php-simplexml php-gd php-soap php-gettext php-sockets php-gmp php-gv php-iconv php-intl php-json php-tokenizer php-mbstring php-ming php-xmlreader php-xmlwriter php-opcache php-xsl php-zip php-pdo_mysql php-zlib php-redis
+          packages: cmake php php-devel gcc-g++ openssl libssl-devel libcurl-devel libpcre2-devel wget tar php-curl php-json php-sockets php-mysqli php-bcmath php-bz2 php-calendar php-ctype php-phar php-posix php-pspell php-exif php-recode php-fileinfo php-simplexml php-gd php-soap php-gettext php-sockets php-gmp php-gv php-iconv php-intl php-json php-tokenizer php-mbstring php-ming php-xmlreader php-xmlwriter php-opcache php-xsl php-zip php-pdo_mysql php-zlib php-redis
 
       - name: Get Swoole Info
         id: swoole_info
@@ -70,6 +69,7 @@ jobs:
           git clone git@github.com:swoole/cygwin.git
           cd cygwin
           C:\tools\php\php.exe ${{ github.workspace }}\build.php
+          cd ..
 
       - name: Upload Release Asset
         id: upload-release-asset
