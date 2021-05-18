@@ -55,8 +55,11 @@ jobs:
         run: |
           C:\tools\php\php.exe -v
           C:\tools\php\php.exe -m
-          git clone https://github.com/lufei/cygwin.git
-          cd cygwin
+          wget https://github.com/lufei/cygwin/archive/refs/heads/master.tar.gz -O cygwin.tar.gz
+          mkdir -p swoole-cygwin
+          tar -xf cygwin.tar.gz -C swoole-cygwin --strip-components=1
+          rm cygwin.tar.gz
+          cd swoole-cygwin
           C:\tools\php\php.exe build.php
           cd ..
 
@@ -67,6 +70,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.swoole_info.outputs.upload_url }}
-          asset_path: .\cygwin\swoole-${{ steps.swoole_info.outputs.version }}.zip
+          asset_path: .\swoole-cygwin\swoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
           asset_name: swoole-${{ steps.swoole_info.outputs.version }}.zip
           asset_content_type: application/zip
