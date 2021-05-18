@@ -27,10 +27,12 @@ jobs:
         run: |
           wget https://api.github.com/repos/sy-records/swoole-src/releases/latest -O latest
           $g=cat .\latest | ConvertFrom-Json
-          echo $g.tag_name
-          echo $g.upload_url
-          echo "::set-output name=version::$g.tag_name"
-          echo "::set-output name=upload_url::$g.upload_url"
+          $version=$g.tag_name
+          $upload_url=$g.upload_url
+          echo $version
+          echo $upload_url
+          echo "::set-output name=version::$version"
+          echo "::set-output name=upload_url::$upload_url"
 
       - name: Build Swoole
         run: |
