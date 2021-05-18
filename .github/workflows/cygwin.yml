@@ -49,23 +49,15 @@ jobs:
           cd ..
         shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
 
-      - name: Configure Private Key
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.CYGWIN_DEPLOY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          echo "StrictHostKeyChecking no" >> ~/.ssh/config
-
       - name: Run build
         env:
           VERSION: ${{ steps.swoole_info.outputs.version }}
         run: |
           C:\tools\php\php.exe -v
           C:\tools\php\php.exe -m
-          git clone git@github.com:swoole/cygwin.git
+          git clone https://github.com/lufei/cygwin.git
           cd cygwin
-          C:\tools\php\php.exe ${{ github.workspace }}\build.php
+          C:\tools\php\php.exe build.php
           cd ..
 
       - name: Upload Release Asset
