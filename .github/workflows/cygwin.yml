@@ -1,13 +1,14 @@
 name: cygwin
 
 on:
+  pull_request:
   push:
     tags:
       - 'v*'
 
 jobs:
   build:
-    if: github.repository_owner == 'swoole'
+    if: github.repository_owner == 'sy-records'
     runs-on: windows-latest
     outputs:
       version: ${{ steps.swoole_info.outputs.version }}
@@ -22,7 +23,7 @@ jobs:
       - name: Get Swoole Info
         id: swoole_info
         run: |
-          wget https://api.github.com/repos/swoole/swoole-src/releases/latest -O latest
+          wget https://api.github.com/repos/sy-records/swoole-src/releases/latest -O latest
           $g=cat .\latest | ConvertFrom-Json
           $version=$g.tag_name
           $upload_url=$g.upload_url
@@ -43,6 +44,7 @@ jobs:
           make -j6
           cp modules/swoole.dll /usr/lib/php/20180731
           echo 'extension=swoole.dll' > /etc/php.d/swoole.ini
+          echo 'extension=redis.dll' > /etc/php.d/redis.ini
           php -v
           php -m
           php --ri swoole
