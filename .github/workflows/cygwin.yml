@@ -61,6 +61,7 @@ jobs:
           echo 'extension=redis.dll' > /etc/php.d/redis.ini
           php --ri redis
           cd ..
+        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
 
       - name: Show PHP info
         run: |
