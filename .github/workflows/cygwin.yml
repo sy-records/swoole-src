@@ -44,13 +44,29 @@ jobs:
           make -j6
           cp modules/swoole.dll /usr/lib/php/20180731
           echo 'extension=swoole.dll' > /etc/php.d/swoole.ini
-          echo 'extension=redis.dll' > /etc/php.d/redis.ini
-          php -v
-          php -m
           php --ri swoole
-          php --ini
           cd ..
         shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
+
+      - name: Build Redis
+        run: |
+          wget https://github.com/phpredis/phpredis/archive/refs/heads/develop.zip -O phpredis.zip
+          unzip phpredis.zip
+          rm phpredis.zip
+          cd phpredis
+          /bin/phpize
+          ./configure
+          make -j6
+          cp modules/redis.dll /usr/lib/php/20180731
+          echo 'extension=redis.dll' > /etc/php.d/redis.ini
+          php --ri redis
+          cd ..
+
+      - name: Show PHP info
+        run: |
+          php -v
+          php -m
+          php --ini
 
       - name: Run build
         env:
