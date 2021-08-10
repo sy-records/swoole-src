@@ -19,7 +19,7 @@ jobs:
         uses: egor-tensin/setup-cygwin@v3
         with:
           platform: x64
-          packages: cmake php php-devel gcc-g++ openssl libssl-devel libcurl-devel libpcre2-devel wget tar php-curl php-json php-sockets php-mysqli php-bcmath php-bz2 php-calendar php-ctype php-phar php-posix php-pspell php-exif php-recode php-fileinfo php-simplexml php-gd php-soap php-gettext php-sockets php-gmp php-gv php-iconv php-intl php-json php-tokenizer php-mbstring php-ming php-xmlreader php-xmlwriter php-opcache php-xsl php-zip php-pdo_mysql php-zlib php-redis
+          packages: cmake php php-devel gcc-g++ openssl libssl-devel libcurl-devel libpcre2-devel wget tar php-curl php-json php-sockets php-mysqli php-bcmath php-bz2 php-calendar php-ctype php-phar php-posix php-pspell php-exif php-recode php-fileinfo php-simplexml php-gd php-soap php-gettext php-sockets php-gmp php-gv php-iconv php-intl php-json php-tokenizer php-mbstring php-ming php-xmlreader php-xmlwriter php-opcache php-xsl php-zip php-pdo_mysql php-zlib php-redis php-pecl-redis
 
       - name: Get Swoole Info
         id: swoole_info
@@ -49,21 +49,21 @@ jobs:
           cd ..
         shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
 
-      - name: Build Redis
-        run: |
-          wget https://pecl.php.net/get/redis-5.3.4.tgz -O phpredis.tar.gz
-          mkdir -p phpredis
-          tar -xf phpredis.tar.gz -C phpredis --strip-components=1
-          rm phpredis.tar.gz
-          cd phpredis
-          /bin/phpize
-          ./configure --disable-redis-json
-          make -j6
-          cp modules/redis.dll /usr/lib/php/20180731
-          echo 'extension=redis.dll' > /etc/php.d/redis.ini
-          php --ri redis
-          cd ..
-        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
+#      - name: Build Redis
+#        run: |
+#          wget https://pecl.php.net/get/redis-5.3.4.tgz -O phpredis.tar.gz
+#          mkdir -p phpredis
+#          tar -xf phpredis.tar.gz -C phpredis --strip-components=1
+#          rm phpredis.tar.gz
+#          cd phpredis
+#          /bin/phpize
+#          ./configure --disable-redis-json
+#          make -j6
+#          cp modules/redis.dll /usr/lib/php/20180731
+#          echo 'extension=redis.dll' > /etc/php.d/redis.ini
+#          php --ri redis
+#          cd ..
+#        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
 
       - name: Show PHP info
         run: |
