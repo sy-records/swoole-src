@@ -57,7 +57,7 @@ jobs:
           rm phpredis.tar.gz
           cd phpredis
           /bin/phpize
-          ./configure
+          ./configure --disable-redis-json
           make -j6
           cp modules/redis.dll /usr/lib/php/20180731
           echo 'extension=redis.dll' > /etc/php.d/redis.ini
