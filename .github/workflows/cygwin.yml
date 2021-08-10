@@ -51,7 +51,7 @@ jobs:
 
       - name: Build Redis
         run: |
-          wget https://github.com/phpredis/phpredis/archive/develop.tar.gz -O phpredis.tar.gz
+          wget https://pecl.php.net/get/redis-5.3.4.tgz -O phpredis.tar.gz
           mkdir -p phpredis
           tar -xf phpredis.tar.gz -C phpredis --strip-components=1
           rm phpredis.tar.gz
