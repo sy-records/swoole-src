@@ -53,7 +53,7 @@ jobs:
           wget https://github.com/phpredis/phpredis/archive/refs/heads/develop.zip -O phpredis.zip
           unzip phpredis.zip
           rm phpredis.zip
-          cd phpredis
+          cd phpredis-develop
           /bin/phpize
           ./configure
           make -j6
