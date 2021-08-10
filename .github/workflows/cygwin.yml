@@ -1,6 +1,7 @@
 name: cygwin
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     tags:
@@ -50,10 +51,11 @@ jobs:
 
       - name: Build Redis
         run: |
-          wget https://github.com/phpredis/phpredis/archive/refs/heads/develop.zip -O phpredis.zip
-          unzip phpredis.zip
-          rm phpredis.zip
-          cd phpredis-develop
+          wget https://github.com/phpredis/phpredis/archive/develop.tar.gz -O phpredis.tar.gz
+          mkdir -p phpredis
+          tar -xf phpredis.tar.gz -C phpredis --strip-components=1
+          rm phpredis.tar.gz
+          cd phpredis
           /bin/phpize
           ./configure
           make -j6
